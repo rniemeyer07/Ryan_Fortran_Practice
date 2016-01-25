@@ -214,8 +214,8 @@ write(10,*)  temp_change_ep
  print *,"sum of 1:720 temperature change in epilim.: ", sum(temp_change_ep(1:720))
  print *,"sum of 1:720 temperature change in hypolim.: ",  sum(temp_change_hyp(1:720))
 
-! print *, "sum of 1:720 temp change due to flow in: ", sum(T_in_tot(1:720))
-! print *, "sum of 1:720 temp change due to flow out: ", sum(T_out_tot(1:720))
+ print *, "sum of 1:720 temp change due to flow in: ", sum(T_in_tot(1:720))
+ print *, "sum of 1:720 temp change due to flow out: ", sum(T_out_tot(1:720))
 ! print *, "sum of 1:720 temp change due to energy: ", sum(energy_tot(1:720))
 ! print *, "sum of 1:720 temp change due to diffusion: ", sum(diffusion_tot(1:720))
 
