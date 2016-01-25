@@ -31,6 +31,10 @@ real :: energy_x, volume_h_x, area, density, heat_c, temp_change
 real  :: flow_in_hyp_x, flow_in_epi_x, flow_out_epi_x, flow_out_hyp_x
 real  :: epix, hypox, dif_epi_x, dif_hyp_x, x, flow_epi_x, flow_hyp_x
 
+! CHARACTER(*), PARAMETER :: fileplace = "/raid3/rniemeyr/practice/practice_fortran/output/" !output file
+
+open(unit=10, file="temp_change_epilim.dat")
+
 depth_total = 30
 width = 200
 length = 17000
@@ -167,11 +171,11 @@ do  i=2,10*365
   ! calculate combined (hypo. and epil.) temperature of outflow
   outflow_x = flow_out_epi_x + flow_out_hyp_x
   epix = temp_epil(i)*(flow_out_epi_x/outflow_x)  ! portion of temperature from epilim. 
-  hypox= temp_hypo(i)/(flow_out_hyp_x/outflow_x)  ! portion of temperature from hypol.
+  hypox= temp_hypo(i)*(flow_out_hyp_x/outflow_x)  ! portion of temperature from hypol.
   temp_out_tot(i) = epix + hypox
 
  if (i==2 .or. i==180 .or. i==370 .or. i==550 .or. i==720 .or. i==3649) then
-!  print *, "run: ", i
+  print *, "run: ", i
 !  print *,"energy of incoming radiation " , energy(i)/(60*60*24)
 !  print *, "energy - joules/day*m2", energy(i)
 !  print *, "area:                 ", area
@@ -191,12 +195,12 @@ do  i=2,10*365
 !   print *, "flow hypolim.  temp change is: ", flow_hyp_x
 !   print *, "depth of epilimnion: ", volume_e_x/area 
 !   print *, "temperature change in epilimnion:  ", temp_change_ep(i)
-!   print *, "outflow temperature from epilimnion is: ", temp_epil(i)
+   print *, "outflow temperature from epilimnion is: ", temp_epil(i)
 !   print *, "depth of hypolimnion: ", volume_h_x/area
 !  print *, "temperature change in hypolimnion:  ", temp_change_hyp(i)
-!  print *, "outflow temperature from hypolimnion is: ", temp_hypo(i)
-!   print *, "outflow (combined)  temperature is: ", temp_out_tot(i)
-!  print *, "  "
+  print *, "outflow temperature from hypolimnion is: ", temp_hypo(i)
+   print *, "outflow (combined)  temperature is: ", temp_out_tot(i)
+  print *, "  "
  end if
 
 end  do
@@ -205,13 +209,15 @@ end  do
 !         Calculations to print at the end 
 !-------------------------------------------------------------------------
 
- print *,"sum of 1:720 temperature change in epilim.: ", sum(temp_change_ep(1:720))
+write(10,*)  temp_change_ep
+
+! print *,"sum of 1:720 temperature change in epilim.: ", sum(temp_change_ep(1:720))
 !  print *,"sum of 1:720 temperature change in hypolim.: ",  sum(temp_change_hyp(1:720))
 
- print *, "sum of 1:720 temp change due to flow in: ", sum(T_in_tot(1:720))
- print *, "sum of 1:720 temp change due to flow out: ", sum(T_out_tot(1:720))
- print *, "sum of 1:720 temp change due to energy: ", sum(energy_tot(1:720))
- print *, "sum of 1:720 temp change due to diffusion: ", sum(diffusion_tot(1:720))
+! print *, "sum of 1:720 temp change due to flow in: ", sum(T_in_tot(1:720))
+! print *, "sum of 1:720 temp change due to flow out: ", sum(T_out_tot(1:720))
+! print *, "sum of 1:720 temp change due to energy: ", sum(energy_tot(1:720))
+! print *, "sum of 1:720 temp change due to diffusion: ", sum(diffusion_tot(1:720))
 
 
 end program two_layer_diffusion
