@@ -38,8 +38,8 @@ real  :: epix, hypox, dif_epi_x, dif_hyp_x, x, flow_epi_x, flow_hyp_x
 open(unit=10, file="temp_change_epilim.dat")
 
 depth_total = 30
-width = 200
-length = 17000
+width = 400
+length = 50000
 area = width*length
 delta_t = 1 ! time is days,  assumes all units in equations are in days
 
@@ -153,8 +153,7 @@ do  i=2,10*365
   dif_hyp_x  = v_t * area * density * heat_c * (temp_epil(i-1) - temp_hypo(i-1))
 
   ! calculate change in EPILIMNION  temperature (celsius)
-  flow_epi_x = flow_in_epi_x * density * heat_c * flow_Tin(i)
-  flow_epi_x = flow_epi_x - (flow_out_epi_x * density * heat_c *  temp_epil(i-1))
+  flow_epi_x = flow_in_epi_x * density * heat_c * (flow_Tin(i) - temp_epil(i-1))
   temp_change_ep(i) = flow_epi_x + energy_x + dif_epi_x
   temp_change_ep(i) = temp_change_ep(i)/(volume_e_x * density * heat_c)
   temp_change_ep(i) = temp_change_ep(i) * delta_t
@@ -169,8 +168,7 @@ do  i=2,10*365
   temp_epil(i) = temp_epil(i-1) +  temp_change_ep(i)
 
   ! calculate change in HYPOLIMNION  temperature (celsius)
-  flow_hyp_x  = flow_in_hyp_x * density * heat_c * flow_Tin(i)
-  flow_hyp_x = flow_hyp_x - (flow_out_hyp_x * density * heat_c * temp_hypo(i-1))
+  flow_hyp_x = flow_in_hyp_x * density * heat_c * (flow_Tin(i) -temp_hypo(i-1))
   temp_change_hyp(i) = flow_hyp_x  +  dif_hyp_x  !add horizontal advection and  diffusion 
   temp_change_hyp(i) = temp_change_hyp(i)/(volume_h_x * density * heat_c)
   temp_change_hyp(i) = temp_change_hyp(i) * delta_t
@@ -185,7 +183,7 @@ do  i=2,10*365
   hypox= temp_hypo(i)*(flow_out_hyp_x/outflow_x)  ! portion of temperature from hypol.
   temp_out_tot(i) = epix + hypox
 
- if (i==2 .or. i==10  .or. i==20 .or. i==30 .or. i==40 .or. i==3649) then
+ if (i==2 .or. i==180  .or. i==365 .or. i==540 .or. i==720 .or. i==3649) then
   print *, "run: ", i
 !  print *,"energy of incoming radiation " , energy(i)/(60*60*24)
 !  print *, "energy - joules/day*m2", energy(i)
@@ -200,9 +198,9 @@ do  i=2,10*365
 !   print *, "change in volume - hypolim.: ", flow_in_hyp_x - flow_out_hyp_x
 !   print *, "depth of epilimnion: ", volume_e_x/area
 !   print *, "depth of hypolimnion: ", volume_h_x/area
-  print *, "energy temp change is : ",energy_x/(volume_e_x * density * heat_c)
-  print *, "diffus temp change  is: ", dif_epi_x/(volume_e_x * density *heat_c)
-  print *, "Qin temp change: ", (flow_in_epi_x * flow_Tin(i))/volume_e_x
+!  print *, "energy temp change is : ",energy_x/(volume_e_x * density * heat_c)
+!  print *, "diffus temp change  is: ", dif_epi_x/(volume_e_x * density *heat_c)
+!  print *, "Qin temp change: ", (flow_in_epi_x * flow_Tin(i))/volume_e_x
 !  print *, "Qout temp change: ", (flow_out_epi_x * temp_epil(i-1))/volume_e_x
 !  print *, "flow epilim. temp change: ", flow_epi_x/(volume_e_x*density* heat_c)
 !   print *, "flow hypolim.  temp change is: ", flow_hyp_x
@@ -210,9 +208,9 @@ do  i=2,10*365
   print *, "temperature change in epilimnion:  ", temp_change_ep(i)
    print *, "outflow temperature from epilimnion is: ", temp_epil(i)
 !   print *, "depth of hypolimnion: ", volume_h_x/area
-!  print *, "temperature change in hypolimnion:  ", temp_change_hyp(i)
-!  print *, "outflow temperature from hypolimnion is: ", temp_hypo(i)
-!   print *, "outflow (combined)  temperature is: ", temp_out_tot(i)
+  print *, "temperature change in hypolimnion:  ", temp_change_hyp(i)
+  print *, "outflow temperature from hypolimnion is: ", temp_hypo(i)
+   print *, "outflow (combined)  temperature is: ", temp_out_tot(i)
   print *, "  "
  end if
 
