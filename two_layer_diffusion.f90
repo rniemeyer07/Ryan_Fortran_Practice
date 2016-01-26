@@ -31,15 +31,15 @@ real :: x1, x2, x3
 real  :: depth_total, depth_e, depth_h, width, length, volume_e_x, outflow_x
 real :: energy_x, volume_h_x, area, density, heat_c, temp_change, delta_t
 real  :: flow_in_hyp_x, flow_in_epi_x, flow_out_epi_x, flow_out_hyp_x
-real  :: epix, hypox, dif_epi_x, dif_hyp_x, x, flow_epi_x, flow_hyp_x
+real  :: epix, hypox, dif_epi_x, dif_hyp_x, x, flow_epi_x, flow_hyp_x, vol_x
 
 ! CHARACTER(*), PARAMETER :: fileplace = "/raid3/rniemeyr/practice/practice_fortran/output/" !output file
 
 open(unit=10, file="temp_change_epilim.dat")
 
 depth_total = 30
-width = 400
-length = 50000
+width = 900
+length = 26200
 area = width*length
 delta_t = 1 ! time is days,  assumes all units in equations are in days
 
@@ -125,9 +125,9 @@ density = 1000 !  density of water in kg / m3
 heat_c = 4180  !  heat capacity of water in joules/ kg * C
 
 ! initial variables
-depth_total = 20
+depth_total = 30
 depth_e = 5
-depth_h = 15
+depth_h = 25
 volume_e_x = area*depth_e
 volume_h_x = area*depth_h
 temp_epil(1) = 5 ! starting epilimnion temperature at 5 C
@@ -155,7 +155,15 @@ do  i=2,10*365
   ! calculate change in EPILIMNION  temperature (celsius)
   flow_epi_x = flow_in_epi_x * density * heat_c * (flow_Tin(i) - temp_epil(i-1))
   temp_change_ep(i) = flow_epi_x + energy_x + dif_epi_x
-  temp_change_ep(i) = temp_change_ep(i)/(volume_e_x * density * heat_c)
+
+  ! loop to calculate temperature change with Qin,epi, IF Qout,epi > volume_e_x
+  if (flow_out_epi_x > volume_e_x) then
+   vol_x = flow_in_epi_x
+  else if (flow_out_epi_x < volume_e_x) then
+   vol_x = volume_e_x
+  end if
+
+  temp_change_ep(i) = temp_change_ep(i)/(vol_x * density * heat_c)
   temp_change_ep(i) = temp_change_ep(i) * delta_t
 
   ! save each temperature change component
@@ -170,7 +178,15 @@ do  i=2,10*365
   ! calculate change in HYPOLIMNION  temperature (celsius)
   flow_hyp_x = flow_in_hyp_x * density * heat_c * (flow_Tin(i) -temp_hypo(i-1))
   temp_change_hyp(i) = flow_hyp_x  +  dif_hyp_x  !add horizontal advection and  diffusion 
-  temp_change_hyp(i) = temp_change_hyp(i)/(volume_h_x * density * heat_c)
+  
+  ! loop to calculate temperature change with Qin, IF Qout > volume_h_x
+  if (flow_out_hyp_x > volume_h_x) then
+    vol_x = flow_in_hyp_x
+  else if (flow_out_hyp_x < volume_h_x) then
+     vol_x = volume_h_x
+  end if 
+
+  temp_change_hyp(i) = temp_change_hyp(i)/(vol_x * density * heat_c)
   temp_change_hyp(i) = temp_change_hyp(i) * delta_t
 
   ! update hypolimnion volume for next time step
