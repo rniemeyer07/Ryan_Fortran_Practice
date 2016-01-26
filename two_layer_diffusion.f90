@@ -236,7 +236,20 @@ end  do
 !         Calculations to print at the end 
 !-------------------------------------------------------------------------
 
-write(10,*)  temp_change_ep
+ open(unit=30, file=path//"hypo_temp_change.txt",action="write",status = "replace")
+ open(unit=31, file=path//"epil_temp_change.txt",action="write",status ="replace")
+ open(unit=40, file=path//"temperature_epil.txt",action="write",status ="replace")
+ open(unit=41, file=path//"temperature_hypo.txt",action="write",status ="replace")
+
+ write(30,*),temp_change_hyp
+ write(31,*),temp_change_ep
+ write(40,*),temp_epil
+ write(41,*),temp_hypo
+
+ close(30)
+ close(31)
+ close(40)
+ close(41)
 
  print *,"total simulation temperature change in epilim.: ", sum(temp_change_ep(1:3650))
  print *,"total simulation  temperature change in hypolim.: ",  sum(temp_change_hyp(1:3650))
